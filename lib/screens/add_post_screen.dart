@@ -18,6 +18,7 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file; 
+  bool _isLoading = false;
   TextEditingController _desriptionControllder = TextEditingController();
   _selectImage(BuildContext context) async {
     return showDialog(
@@ -72,6 +73,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void postImage(String uid, username, String profImage) async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       String res = await FirsestoreMethods().uploadPost(
         _desriptionControllder.text, 
         _file!, 
@@ -80,6 +84,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
         profImage
       );
       if(res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar(context, "Posted");
+        clearImage();
+      }else {
+        setState(() {
+          _isLoading = false;
+        });
         showSnackBar(context, res);
       }
     } catch (e) {
@@ -153,6 +166,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
         child: Column( 
           children: [
             SizedBox(height: 20,),
+            _isLoading ? LinearProgressIndicator() : Container(),
+            SizedBox(height: 20,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,34 +177,73 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     user.photoUrl
                   ),
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  child: TextField(
-                    controller: _desriptionControllder,
-                    decoration: InputDecoration(
-                      hintText: 'Write a caption...',
-                      border: InputBorder.none
-                    ),
-                    maxLines: 8,
-                  ),
-                ),
-                SizedBox(
-                      height: 45.0,
-                      width: 45.0,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                            fit: BoxFit.fill,
-                            alignment: FractionalOffset.topCenter,
-                            image: MemoryImage(
-                              _file!
-                            ),
-                          )),
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: blueColor
                       ),
                     ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: TextField(
+                        controller: _desriptionControllder,
+                        decoration: InputDecoration(
+                          hintText: 'Write a caption...',
+                          border: InputBorder.none
+                        ),
+                        maxLines: 8,
+                      ),
+                ),
+                  ],
+                ),
+                SizedBox(
+                  height: 45.0,
+                  width: 45.0,
+                  child: AspectRatio(
+                    aspectRatio: 487 / 451,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                        fit: BoxFit.fill,
+                        alignment: FractionalOffset.topCenter,
+                        image: MemoryImage(
+                          _file!
+                        ),
+                      )),
+                    ),
+                  ),
+                ),
+                InkWell(
+                child: Container(
+                  child: !_isLoading
+                      ? const Text(
+                          'Log in',
+                          style: TextStyle(
+                            color: mobileBackgroundColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
+                          ),
+                        )
+                      : const CircularProgressIndicator(
+                          color: mobileBackgroundColor,
+                        ),
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: const ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                    color: blueColor,
+                  ),
+                ),
+                onTap: (){},
+              ),
               ],
             )
           ],
