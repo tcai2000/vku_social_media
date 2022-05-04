@@ -3,24 +3,46 @@ import 'package:app/providers/user_provider.dart';
 import 'package:app/resources/firestore_methods.dart';
 import 'package:app/screens/comment_screen.dart';
 import 'package:app/utils/colors.dart';
+import 'package:app/utils/utils.dart';
 import 'package:app/widgets/like_animation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
-   final snap;
+  final snap;
   const PostCard({required this.snap});
 
   @override
   State<PostCard> createState() => _PostCardState();
+  
 }
 
 class _PostCardState extends State<PostCard> {
 
   bool isLikeAnimating = false;
+  int commentLength = 0;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getComments();
+  }
 
+  void getComments() async {
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance.collection("posts").doc(widget.snap["postId"]).collection('comments').get();
+      commentLength = snap.docs.length;
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+    setState(() {
+      
+    });
+  } 
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<UserProvider>(context).getUser;
@@ -96,78 +118,6 @@ class _PostCardState extends State<PostCard> {
             ),
           ),
           SizedBox(height: 28,),
-          // Container(
-          //   decoration: BoxDecoration(
-          //     boxShadow: <BoxShadow>[
-          //         BoxShadow(
-          //             color: Colors.grey,
-          //             blurRadius: 8.0,
-          //             offset: Offset(0.0, 0.75)
-          //         )
-          //       ],
-          //   ),
-          //   child: Stack(
-          //     children: [
-          //       Container(
-          //         height: MediaQuery.of(context).size.height * 0.35,  
-          //         width: double.infinity,                
-          //         child: ClipRRect(
-          //           borderRadius: BorderRadius.circular(14),
-          //           child: Image.network(
-          //             "https://images.unsplash.com/photo-1651422739070-61f8cc638628?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80",
-          //             fit: BoxFit.cover,
-          //           ),
-          //         ),
-          //       ),
-          //       Positioned(
-          //         bottom: 0,
-          //         right: 0,
-          //         left: 0,
-          //         child: Container(
-          //           decoration: BoxDecoration(
-          //             color: mobileBackgroundColor,
-          //             borderRadius: BorderRadius.only(
-          //               topLeft: Radius.circular(40)
-          //             )
-          //           ),
-          //           padding: EdgeInsets.symmetric(horizontal: 10),
-          //           height: MediaQuery.of(context).size.width * 0.14,
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //             crossAxisAlignment: CrossAxisAlignment.end,
-          //             children: [
-          //               IconButton(
-          //                 onPressed: (){}, 
-          //                 icon: Icon(
-          //                   Icons.favorite,
-          //                   color: Colors.red,
-          //                 )
-          //               ),
-          //               IconButton(
-          //                 onPressed: (){}, 
-          //                 icon: Icon(Icons.comment_outlined)
-          //               ),
-          //               IconButton(
-          //                 onPressed: (){}, 
-          //                 icon: Icon(Icons.send)
-          //               ),
-          //               Expanded(
-          //                 child: Align(
-          //                   alignment: Alignment.bottomRight,
-          //                   child: IconButton(
-          //                     onPressed: (){}, 
-          //                     icon: Icon(Icons.bookmark_border)
-          //                   ),
-          //                 ),
-          //               ) 
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-                
-          //     ],
-          //   ),
-          // ),
 
           GestureDetector(
             onDoubleTap: () async {
@@ -248,12 +198,12 @@ class _PostCardState extends State<PostCard> {
                 ),
                 IconButton(
                   onPressed: (){
-                    Navigator.push(context, PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => CommentScreen(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        return child;
-                      },
-                    ));
+                    pushNewScreen(
+                      context,
+                      screen: CommentScreen(snap: widget.snap,),
+                      withNavBar: false, // OPTIONAL VALUE. True by default.
+                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
                   }, 
                   icon: Icon(Icons.comment_outlined)
                 ),
@@ -317,7 +267,7 @@ class _PostCardState extends State<PostCard> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Text(
-                      "View all 200 comments",
+                      "View all $commentLength comments",
                       style: TextStyle(
                         fontSize: 16,
                         color: secondaryColor

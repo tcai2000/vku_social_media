@@ -36,10 +36,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     await _userProvider.refreshUser();
   }
 
-  
-
-  
-
   @override
   Widget build(BuildContext context) {
     // userModel.User user = Provider.of<UserProvider>(context).getUser;
@@ -67,7 +63,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           itemAnimationProperties: const ItemAnimationProperties(
             // Navigation Bar's items animation properties.
             duration: Duration(milliseconds: 200),
-            curve: Curves.ease,
+            curve: Curves.easeInToLinear,
           ),
           screenTransitionAnimation:  const ScreenTransitionAnimation(
             // Screen transition animation on change of selected tab.
