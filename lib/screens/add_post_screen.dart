@@ -87,7 +87,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
         setState(() {
           _isLoading = false;
         });
-        showSnackBar(context, "Posted");
         clearImage();
       }else {
         setState(() {
@@ -117,7 +116,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
+    final UserModel user = Provider.of<UserProvider>(context).getUser;
     return _file == null 
     ? Center(
       child: IconButton(
@@ -218,32 +217,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                   ),
                 ),
-                InkWell(
-                child: Container(
-                  child: !_isLoading
-                      ? const Text(
-                          'Log in',
-                          style: TextStyle(
-                            color: mobileBackgroundColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        )
-                      : const CircularProgressIndicator(
-                          color: mobileBackgroundColor,
-                        ),
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    color: blueColor,
-                  ),
-                ),
-                onTap: (){},
-              ),
               ],
             )
           ],

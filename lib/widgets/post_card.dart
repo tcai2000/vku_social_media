@@ -45,7 +45,7 @@ class _PostCardState extends State<PostCard> {
   } 
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<UserProvider>(context).getUser;
+    UserModel user = Provider.of<UserProvider>(context).getUser;
     return Container(
       color: mobileBackgroundColor,
       padding: EdgeInsets.symmetric(
@@ -104,8 +104,9 @@ class _PostCardState extends State<PostCard> {
                                       horizontal: 16),
                                 child: Text(e),
                               ),
-                              onTap: () {
-                                
+                              onTap: () async {
+                                await FirsestoreMethods().deletePost(widget.snap["postId"]);
+                                Navigator.pop(context, false);
                               }),
                           )
                           .toList()),
@@ -263,7 +264,9 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
                 InkWell(
-                  onTap: (){},
+                  onTap: () async {
+                    FirsestoreMethods().deletePost(widget.snap["postId"]);
+                  },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Text(

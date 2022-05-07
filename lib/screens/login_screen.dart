@@ -26,12 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     String res = await AuthMethods().loginUser(email: _emailController.text, password: _passwordController.text);
     if(res == 'success') {
-      showSnackBar(context, res);
       Navigator.push(context, MaterialPageRoute(
         builder: (context) => DashBoardScreen(),
       ));
     }else {
-      showSnackBar(context, res);
+      print(res);
     }
     setState(() {
       _isLoading = false;

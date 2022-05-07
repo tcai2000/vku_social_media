@@ -1,19 +1,20 @@
 import 'package:app/screens/feed_screen.dart';
+import 'package:app/screens/nofication_screen.dart';
+import 'package:app/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-
 import '../screens/add_post_screen.dart';
-import '../screens/home_screen.dart';
 import '../screens/search_screen.dart';
 
 List<Widget> buildScreens() {
   return [
+    NotificationScreen(),
     FeedScreen(),
-    AddPostScreen(),
     SearchScreen(),
     AddPostScreen(),
-    SearchScreen(),
+    ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid,),
   ];
 }
 

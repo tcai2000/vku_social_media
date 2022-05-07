@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:app/models/post.dart';
 import 'package:app/resources/storage_methods.dart';
@@ -79,5 +80,89 @@ class FirsestoreMethods {
       print(e.toString());
     }
     return '';
+  }
+
+  // delete Post
+  Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
+    } catch (e) { 
+      print(e.toString());
+    }
+  }
+
+
+  // Followe User
+  Future<void> followUser(
+    String uid,
+    String followId
+  ) async {
+    try {
+      DocumentSnapshot snap =  await _firestore.collection("users").doc(uid).get();
+      List following = (snap.data() as dynamic)["following"];
+
+      if(following.contains(followId)) {
+        await _firestore.collection("users").doc(followId).update({
+          'followers': FieldValue.arrayRemove([uid])
+        });
+
+        await _firestore.collection("users").doc(uid).update({
+          'following': FieldValue.arrayRemove([followId])
+        });
+      }else {
+        await _firestore.collection("users").doc(followId).update({
+          'followers': FieldValue.arrayUnion([uid])
+        });
+
+        await _firestore.collection("users").doc(uid).update({
+          'following': FieldValue.arrayUnion([followId])
+        });
+      }
+
+    } catch (e) {
+    }  
+
+  } 
+
+  // Create FollowRequest Notifi
+  Future<void> followReqnotif(
+    String uid, 
+    String profilePic,
+    String text,
+    String name,
+    String userId
+    
+
+  ) async {
+    String notifyId = const Uuid().v1();
+    try {
+      await _firestore
+        .collection("users")
+        .doc(uid)
+        .collection("follow_requests")
+        .doc(notifyId)
+        .set({
+          'uid': userId,
+          'profilePic': profilePic,
+          'text': text,
+          'name': name,
+          'notifyId': notifyId,
+          'datePushished': DateTime.now()
+        }
+      );
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  // Delete Notify
+
+  Future<void> deleteNotify(String notifyId) async {
+    await _firestore 
+      .collection("users")
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection("follow_requests")
+      .doc(notifyId)
+      .delete();
   }
 }

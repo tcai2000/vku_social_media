@@ -43,7 +43,7 @@ class FeedScreen extends StatelessWidget {
         builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: LinearProgressIndicator(color: blueColor,),
+              child: CircularProgressIndicator(),
             );
           }
           return ListView.builder(

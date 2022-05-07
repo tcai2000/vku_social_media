@@ -41,21 +41,23 @@ class _CommentScreenState extends State<CommentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
+    final UserModel user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          onPressed: (){},
+          onPressed: (){
+            Navigator.pop(context);
+          },
           icon: Icon(
             Icons.arrow_back_ios,
             color: blueColor,
           ),
         ),
         title: Text(
-          "${user.username} comments",
+          "${widget.snap["username"]} comments",
           style: TextStyle(
             color: blueColor
           ),
@@ -164,6 +166,7 @@ class _CommentScreenState extends State<CommentScreen> {
                   setState(() {
                     _commentController.text = "";
                   });
+
                 },
                 child: Container(
                   padding:
